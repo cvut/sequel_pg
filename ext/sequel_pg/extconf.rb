@@ -16,6 +16,11 @@ end
 if (have_library('pq') || have_library('libpq') || have_library('ms/libpq')) && have_header('libpq-fe.h')
   have_func 'PQsetSingleRowMode'
   create_makefile("sequel_pg")
+
+  # Remove --no-unefined ldflag.
+  # This workaround is needed on Gentoo; https://github.com/jeremyevans/sequel_pg/issues/18.
+  makefile = File.read("Makefile")
+  File.write("Makefile", makefile.gsub(/\s-Wl,--no-undefined\s/, "\n"))
 else
   puts 'Could not find PostgreSQL build environment (libraries & headers): Makefile not created'
 end
